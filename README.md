@@ -1,5 +1,5 @@
-# AI-behavioural-authentication-by-stephen-nzekwesi
-BhAuth, as i call it is a behavioural authentication using machine learning, based on keystroke dynamics and mouse movement pattern.
+# AI Behavioural Authentication
+BhAuth, as I call it is a behavioural authentication using machine learning, based on keystroke dynamics and mouse movement pattern.
 
 ## Supervisor: Vivek Singh
 
