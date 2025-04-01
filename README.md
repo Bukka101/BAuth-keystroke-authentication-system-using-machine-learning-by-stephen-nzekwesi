@@ -17,6 +17,15 @@ BAuth exemplifies the potential of behavioural authentication, ensuring first-ha
 BAuth, Keystroke Dynamics, Behavioural Authentication, Keystroke Authentication, Machine learning 
 
 
-## Requirements
-To install required dependencies, run the following command
+## Setup Instructions
+Python, PHP, and MySql are required for this project. Make sure they are installed and configured correctly.
+ - Download and install Python from [python official website](https://www.python.org/downloads/)
+ - Download and install [PHP](https://www.php.net/downloads.php) 
+ - Download, install and set up MySql from the [official website](https://www.mysql.com/downloads/)
+ - Install/configure php-mysql extension, required to use MySql with PHP. 
+
+Instructions on how to do these, depending on your particular operating system are publicly available online.
+
+Moving forward, required python dependencies are listed in requirements.txt. To install, run command
 `pip install -r requirements.txt`
+
