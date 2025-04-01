@@ -15,3 +15,8 @@ BAuth exemplifies the potential of behavioural authentication, ensuring first-ha
 
 ## Keywords
 BAuth, Keystroke Dynamics, Behavioural Authentication, Keystroke Authentication, Machine learning 
+
+
+## Requirements
+To install required dependencies, run the following command
+`pip install -r requirements.txt`
