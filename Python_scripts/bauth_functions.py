@@ -4,6 +4,7 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
 import joblib
+import statistics
 
 # Process dataset
 # input: dataset
@@ -42,7 +43,7 @@ def process_dataset(dataset):
     # Add subject column
     df_normalized['subject'] = dt['subject']
 
-    return df_normalized
+    return df_normalized, scaler
 
 
 
@@ -84,7 +85,7 @@ def run_train(model_name, dataset, model_type, path):
     m_name, m_dataset, m_type, m_path = model_name, dataset, model_type, path
 
     # Process dataset
-    df = process_dataset(m_dataset)
+    df, scaler = process_dataset(m_dataset)
 
     # Split dataframe into features and target
     X, y = split_df(df)
@@ -95,7 +96,54 @@ def run_train(model_name, dataset, model_type, path):
     elif m_type == "SVM":
         model = svm_model(X, y)
 
-    full_path = m_path + m_name + ".joblib"
-    joblib.dump(model, full_path)
+    m_full_path = m_path + m_name + ".joblib"
+    s_full_path = m_path + m_name + "_scaler" +".joblib"
+    joblib.dump(model, m_full_path)
+    joblib.dump(scaler, s_full_path)
 
     return 1
+
+# Process prediction input data -
+# Compare input keystroke is expected keys needed for prediction
+# Process and scale data using model scaler
+# Predict user using specified model
+# Input: model_path (absolute path of the model in file), keystroke (dictionary of user's keystroke data)
+# Output: predicted user
+
+def run_pred(keystroke):
+    m_path = keystroke['model_path']
+    del keystroke['model_path']
+    expected_keys = ['H.period', 'DD.period.t', 'UD.period.t', 'H.t', 'DD.t.i', 'UD.t.i', 'H.i', 'DD.i.e', 'UD.i.e', 'H.e', 'DD.e.five', 'UD.e.five', 'H.five', 'DD.five.Shift.r', 'UD.five.Shift.r', 'H.Shift.r', 'DD.Shift.r.o', 'UD.Shift.r.o', 'H.o', 'DD.o.a', 'UD.o.a', 'H.a', 'DD.a.n', 'UD.a.n', 'H.n', 'DD.n.l', 'UD.n.l', 'H.l', 'DD.l.Return', 'UD.l.Return', 'H.Return']
+
+    if list(keystroke.keys()) == expected_keys:
+
+        ks_values = list(keystroke.values())
+        # Compute statistics
+        mean_value = statistics.mean(ks_values)
+        variance_value = statistics.variance(ks_values)
+        std_dev_value = statistics.stdev(ks_values)
+
+        # Add to dictionary
+        keystroke["row_mean"] = mean_value
+        keystroke["row_variance"] = variance_value
+        keystroke["row_std_dev"] = std_dev_value
+
+        # Load model and scaler from file
+        try:
+            model = joblib.load(m_path)
+            scaler = joblib.load(m_path.replace(".joblib", "_scaler.joblib"))
+
+            keystroke = pd.DataFrame(keystroke, index=[0]) # Convert to dataframe
+
+            df_norm = scaler.transform(keystroke) # Scale data
+
+            model_pred = model.predict(df_norm) # Predict user
+
+            return model_pred[0]
+
+        except Exception as e:
+            return ("Error! Model loading and prediction unsuccessful. Make sure the trained model files are in the specified directory")
+        
+    else:
+        raise Exception ("Keystroke data does not have required keys for model prediction!")
+

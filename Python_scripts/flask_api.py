@@ -3,6 +3,7 @@ import os
 import re
 import pandas as pd
 from bauth_functions import run_train
+from bauth_functions import run_pred
 from flask import jsonify
 
 # Create a Flask application instance
@@ -17,8 +18,9 @@ def home():
 @app.route('/train', methods=['POST'])
 def inspect_input():
 # Inspect inputs. inspects supplied input to ascertain they are supposed as expected
+# train model and save to file
 # input: supplied input variables
-# output: variables for model training. Or fail safe
+# output: success Or fail safe
     try:
         # Get and handle variables from form data
         model_name = request.form.get('model_name').strip()
@@ -34,9 +36,9 @@ def inspect_input():
             return jsonify({"error": "Model type must be either 'RF' or 'SVM'."}), 400
 
         if not (path.endswith("/") or path.endswith("\\")):
-            return jsonify({"error": "path must end with either forward or backward slash."}), 400
+            return jsonify({"error": "path must end with either '/' or '\\'."}), 400
 
-        if not os.path.isabs(path) or not os.access(path, os.W_OK):
+        if not os.path.isabs(path) and os.access(path, os.W_OK):
             return jsonify({"error": "Invalid or non-writable system path."}), 400
 
         # Handle uploaded file
@@ -68,6 +70,30 @@ def inspect_input():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+
+# define route for prediction
+@app.route('/predict', methods=['POST'])
+def inspect_pred():
+# Inspect inputs. inspects supplied input to ascertain they are supposed as expected
+# run prediction
+# input: supplied input and json data of keystroke
+# output: predicted user Or fail safe
+    try:
+        if not request.is_json:
+            return jsonify({"error": "Request must be JSON"}), 400
+
+        data = request.get_json()
+
+        if 'model_path' not in data:
+            return jsonify({"error": "model path data must be present in json"}), 400
+
+        prediction = run_pred(data)
+        return jsonify({"prediction": prediction}), 200
+
+    except Exception as e:
+        return jsonify({"error": "Invalid JSON format"}), 400
 
 
 # Run the app if this script is executed
