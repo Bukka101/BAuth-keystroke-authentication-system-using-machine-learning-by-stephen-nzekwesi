@@ -1,3 +1,9 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+# In[ ]:
+
+
 from flask import Flask, request
 import os
 import re
@@ -9,17 +15,17 @@ from flask import jsonify
 # Create a Flask application instance
 app = Flask(__name__)
 
-# Define a route for the home page
+# Define route for the home page
 @app.route('/')
 def home():
     return "Hello, World!"
 
-# define route for train model
+# define route for model training
 @app.route('/train', methods=['POST'])
-def inspect_input():
+def train_model():
 # Inspect inputs. inspects supplied input to ascertain they are supposed as expected
 # train model and save to file
-# input: supplied input variables
+# input: model name, model type, path, dataset
 # output: success Or fail safe
     try:
         # Get and handle variables from form data
@@ -64,7 +70,7 @@ def inspect_input():
 
         # Run model training
         if run_train(model_name, dataset, model_type, path) ==  1:
-            return jsonify({"message": "Model training successful."}), 200
+            return jsonify({"message": "Model training successful. Model files has been saved locally on the path provided"}), 200
         else:
             return jsonify({"error": "Model training failed."}), 500
 
@@ -72,13 +78,12 @@ def inspect_input():
         return jsonify({"error": str(e)}), 500
 
 
-
-# define route for prediction
+# define route for model prediction
 @app.route('/predict', methods=['POST'])
-def inspect_pred():
+def model_pred():
 # Inspect inputs. inspects supplied input to ascertain they are supposed as expected
 # run prediction
-# input: supplied input and json data of keystroke
+# input: JSON data containing model and keystroke data
 # output: predicted user Or fail safe
     try:
         if not request.is_json:
@@ -90,7 +95,7 @@ def inspect_pred():
             return jsonify({"error": "model path data must be present in json"}), 400
 
         prediction = run_pred(data)
-        return jsonify({"prediction": prediction}), 200
+        return jsonify({"Prediction": prediction}), 200
 
     except Exception as e:
         return jsonify({"error": "Invalid JSON format"}), 400

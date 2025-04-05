@@ -8,6 +8,7 @@
             <th>Model Name</th>
             <th>Model Type</th>
             <th>Date Trained</th>
+            <th>Status</th>
             <th>Actions</th>
         </tr>
 

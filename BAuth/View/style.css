@@ -125,7 +125,7 @@ td button {
 form {
     background: white;
     padding: 20px;
-    width: 50%;
+    width: 25%;
     margin: auto;
     box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
     border-radius: 5px;
@@ -218,96 +218,47 @@ input[readonly] {
     cursor: not-allowed;
 }
 
-/* Navigation Bar */
-.navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #333;
-    padding: 10px 20px;
-}
+       .auth-assign-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
 
-/* Navigation Links */
-.navbar ul {
-    list-style: none;
-    display: flex;
-}
+        .auth-assign-container h2 {
+            margin-bottom: 20px;
+        }
 
-.navbar ul li {
-    position: relative;
-}
+        .select-lists {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
 
-.navbar ul li a {
-    text-decoration: none;
-    color: white;
-    padding: 10px 15px;
-    display: block;
-}
+        .select-lists div {
+            flex: 1;
+        }
 
-.navbar ul li a:hover {
-    background-color: #555;
-}
-
-/* Submenu Dropdown */
-.navbar ul li ul {
-    display: none;
-    position: absolute;
-    background-color: #333;
-    list-style: none;
-    top: 100%;
-    left: 0;
-    width: 200px;
-}
-
-.navbar ul li:hover ul {
-    display: block;
-}
-
-.navbar ul li ul li {
-    width: 100%;
-}
-
-.navbar ul li ul li a {
-    padding: 10px;
-    display: block;
-}
-
-/* Hamburger Menu - Hidden on Desktop */
-.menu-icon {
-    display: none; /* Hidden by default */
-    font-size: 24px;
-    cursor: pointer;
-    color: white;
-}
-
-/* Responsive Design for Mobile */
-@media screen and (max-width: 768px) {
-    .navbar {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .navbar ul {
-        flex-direction: column;
-        width: 100%;
-        display: none;
-    }
-
-    .navbar ul li {
-        width: 100%;
-    }
-
-    .navbar ul li a {
-        width: 100%;
-        text-align: left;
-    }
-
-    /* Show Hamburger Icon Only on Mobile */
-    .menu-icon {
-        display: block;
-    }
-
-    .navbar.active ul {
-        display: flex;
-    }
-}
+        .login-container {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 25px;
+            background-color: #f2f2f2;
+            border-radius: 10px;
+        }
+        .login-container h2 {
+            margin-bottom: 20px;
+        }
+        .login-container input {
+            width: 100%;
+            margin-bottom: 15px;
+            padding: 10px;
+        }
+        .login-container button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+        }

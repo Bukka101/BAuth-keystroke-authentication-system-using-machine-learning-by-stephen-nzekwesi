@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Mar 31, 2025 at 08:48 AM
+-- Generation Time: Apr 03, 2025 at 10:06 PM
 -- Server version: 10.11.11-MariaDB
 -- PHP Version: 8.3.17
 
@@ -28,21 +28,24 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `model` (
-  `id` int(11) NOT NULL,
   `model_id` varchar(13) NOT NULL,
   `name` varchar(255) NOT NULL,
   `dataset_name` varchar(255) NOT NULL,
-  `date_trained` varchar(200) NOT NULL,
+  `date_trained` date NOT NULL,
   `type` varchar(255) NOT NULL,
-  `path` varchar(255) NOT NULL
+  `path` varchar(255) NOT NULL,
+  `status` text NOT NULL DEFAULT 'Inactive'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
 -- Dumping data for table `model`
 --
 
-INSERT INTO `model` (`id`, `model_id`, `name`, `dataset_name`, `date_trained`, `type`, `path`) VALUES
-(1, 'm001', 'Aji Sabo', 'industry.csv', '2025-Mar-28', 'mouse', 'Removed Apps.html');
+INSERT INTO `model` (`model_id`, `name`, `dataset_name`, `date_trained`, `type`, `path`, `status`) VALUES
+('m001', 'model0', 'industry.csv', '2025-03-28', 'Random Forest', 'Removed Apps.html', 'Inactive'),
+('m048', 'model007', 'industry.csv', '2025-04-02', 'SVM', 'archive', 'Active'),
+('m056', 'ModelTest', 'Staff Leave Requests.csv', '2025-04-02', 'Random Forest', 'AAP Inventory Final Figures.xlsx', 'Inactive'),
+('m080', 'Model003', 'Paired Punch_20250328160223_export.csv', '2025-04-02', 'SVM', 'Paired Punch_20250213093537_export.xlsx', 'Inactive');
 
 -- --------------------------------------------------------
 
@@ -51,19 +54,19 @@ INSERT INTO `model` (`id`, `model_id`, `name`, `dataset_name`, `date_trained`, `
 --
 
 CREATE TABLE `users` (
-  `id` int(13) NOT NULL,
   `user_id` varchar(13) NOT NULL,
   `username` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `auth_type` varchar(255) NOT NULL
+  `auth_type` varchar(255) NOT NULL DEFAULT 'Password'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `user_id`, `username`, `password`, `auth_type`) VALUES
-(1, 'S002', 'simpsons', '$2y$10$bTiy6.9nkHFL8kA0EdW4YOuwGIOC1qLQLITKI8Xpg9ntkSb3ykI7O', 'Password + ks');
+INSERT INTO `users` (`user_id`, `username`, `password`, `auth_type`) VALUES
+('S002', 'simpsons', '$2y$10$00eVtNOreUFnVKrxPFYStOtCM9t3XlqJW29hdp/UEKDmgbX2zgHJC', 'Password + ks'),
+('s004', 'Achalugu', 'achichi', 'Password + ks');
 
 --
 -- Indexes for dumped tables
@@ -73,26 +76,13 @@ INSERT INTO `users` (`id`, `user_id`, `username`, `password`, `auth_type`) VALUE
 -- Indexes for table `model`
 --
 ALTER TABLE `model`
-  ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `model_id` (`model_id`);
 
 --
 -- Indexes for table `users`
 --
 ALTER TABLE `users`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `user_id` (`user_id`),
-  ADD UNIQUE KEY `id` (`id`);
-
---
--- AUTO_INCREMENT for dumped tables
---
-
---
--- AUTO_INCREMENT for table `model`
---
-ALTER TABLE `model`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  ADD UNIQUE KEY `user_id` (`user_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

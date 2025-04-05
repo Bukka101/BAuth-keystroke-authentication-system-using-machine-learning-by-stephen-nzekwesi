@@ -8,18 +8,16 @@
 
         <!-- Model Name -->
         <label for="modelName">Model Name:</label>
-        <input type="text" id="modelName" name="model_name" value="<?php echo $info['name']; ?>" required><br><br>
+        <input type="text" id="modelName" name="model_name" value="<?php echo $info['name']; ?>"><br><br>
 
         <!-- Model Type Dropdown -->
         <label for="modelType">Model Type:</label>
-        <select id="modelType" name="modelType">
-            <option value="keystroke" <?php if ($info['type'] == 'keystroke') echo 'selected'; ?>>Keystroke-based</option>
-            <option value="mouse" <?php if ($info['type'] == 'mouse') echo 'selected'; ?>>Mouse Movement-based</option>
-        </select><br><br>
+        
+        <input type="text" id="modelType" name="modelType" value="<?php echo $info['type']; ?>" readonly><br><br><br><br>
 
         <!-- File Path (Browse Option) -->
         <label for="filePath">Dataset File:</label>
-        <input type="file" id="filePath" name="dataset_name" accept=".csv" onchange="updateFilePath()" required>
+        
         <input type="text" id="filePathText" name="file_path" value="<?php echo $info['dataset_name']; ?>" readonly><br><br>
 
         <!-- Save & Reset Buttons -->

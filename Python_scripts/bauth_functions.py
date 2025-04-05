@@ -1,3 +1,9 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+# In[ ]:
+
+
 # Importation
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
@@ -6,9 +12,13 @@ from sklearn.svm import SVC
 import joblib
 import statistics
 
-# Process dataset
+
+# In[ ]:
+
+
+# Process dataset - engineer features and normalize dataset
 # input: dataset
-# output: normalized dataframe ready for model training
+# output: normalized dataframe
 
 def process_dataset(dataset):
     # Read the dataset
@@ -20,31 +30,38 @@ def process_dataset(dataset):
 
     for item in expected_title:
         if item not in cvs_title:
-            raise Exception ("The CVS file is not as expected!")
+            raise Exception ("The CVS file is not formated as expected!")
 
-    # Drop subject column
+
+    """ engineer features
+    Drop subject column
+    Calculate row-based mean, variance, and standard deviation
+    Add the calculated values as new columns to the DataFrame
+    Normalize dataframe
+    Add subject column
+    return normalized dataframe
+    """
     df = dt[expected_title]
     df = df.drop(columns=['subject'])
 
-    # Calculate row-based mean, variance, and standard deviation
     row_means = df.mean(axis=1)
     row_variances = df.var(axis=1)
     row_std_devs = df.std(axis=1)
 
-    # Add the calculated values as new columns to the DataFrame
     df['row_mean'] = row_means
     df['row_variance'] = row_variances
     df['row_std_dev'] = row_std_devs
 
-    ## Normalize dataframe
     scaler = MinMaxScaler()
     df_normalized = pd.DataFrame(scaler.fit_transform(df), columns=df.columns)
 
-    # Add subject column
     df_normalized['subject'] = dt['subject']
 
     return df_normalized, scaler
 
+
+
+# In[ ]:
 
 
 # split training features and target
@@ -57,7 +74,11 @@ def split_df(df):
 
     return X, y
 
-# Random forest model
+
+# In[ ]:
+
+
+# train Random forest model
 # input: training features (X), target (y)
 # output: trained random forest model
 
@@ -67,7 +88,11 @@ def rf_model(X, y):
 
     return rf_classifier
 
-# SVC model
+
+# In[ ]:
+
+
+# train SVC model
 # input: training features (X), target (y)
 # output: trained SVC model
 
@@ -75,22 +100,29 @@ def svm_model(X, y):
     svm_model = SVC()
     svm_model.fit(X, y)
 
+    return svm_model
 
-# Run code and save model to disk
+
+# In[ ]:
+
+
+# train model - save model files to disk
 # input: model name (str), dataset (csv), model type ('RF' or 'SVM'), system location to save model (str)
-# output: 1 if sucessfull
+# output: 1 on success
 
 def run_train(model_name, dataset, model_type, path):
-    # Inspect inputs
+    """Inspect inputs
+    Process dataset
+    Split dataframe into features and target
+    Train model
+    dump model files to disk
+    """
     m_name, m_dataset, m_type, m_path = model_name, dataset, model_type, path
 
-    # Process dataset
     df, scaler = process_dataset(m_dataset)
 
-    # Split dataframe into features and target
     X, y = split_df(df)
 
-    # Train model
     if m_type == "RF":
         model = rf_model(X, y)
     elif m_type == "SVM":
@@ -103,12 +135,16 @@ def run_train(model_name, dataset, model_type, path):
 
     return 1
 
+
+# In[ ]:
+
+
 # Process prediction input data -
-# Compare input keystroke is expected keys needed for prediction
+# Confirm input has expected keys needed for prediction
 # Process and scale data using model scaler
 # Predict user using specified model
-# Input: model_path (absolute path of the model in file), keystroke (dictionary of user's keystroke data)
-# Output: predicted user
+# Input: model_path (absolute path of the model on disk), keystroke (dictionary of user's keystroke data)
+# Output: predicted user ID
 
 def run_pred(keystroke):
     m_path = keystroke['model_path']
@@ -128,22 +164,23 @@ def run_pred(keystroke):
         keystroke["row_variance"] = variance_value
         keystroke["row_std_dev"] = std_dev_value
 
-        # Load model and scaler from file
+        # Load model and scaler from disk, scale and make prediction.
+        # Return prediction
         try:
             model = joblib.load(m_path)
             scaler = joblib.load(m_path.replace(".joblib", "_scaler.joblib"))
 
-            keystroke = pd.DataFrame(keystroke, index=[0]) # Convert to dataframe
+            keystroke = pd.DataFrame(keystroke, index=[0])
 
-            df_norm = scaler.transform(keystroke) # Scale data
+            df_norm = scaler.transform(keystroke)
 
-            model_pred = model.predict(df_norm) # Predict user
+            model_pred = model.predict(df_norm)
 
             return model_pred[0]
 
         except Exception as e:
             return ("Error! Model loading and prediction unsuccessful. Make sure the trained model files are in the specified directory")
-        
+
     else:
         raise Exception ("Keystroke data does not have required keys for model prediction!")
 

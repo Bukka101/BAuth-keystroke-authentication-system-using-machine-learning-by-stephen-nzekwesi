@@ -30,7 +30,7 @@
             <li><a href="?action=authentication">Authentication</a>
                 <ul>
                     <li><a href="?action=authentication">List by Auth Type</a></li>
-                    <li><a href="?action=authentication">Assign</a></li>
+                    <li><a href="?action=assign_auth">Assign</a></li>
                 </ul>
             </li>
             <li><a href="?action=test">Test</a></li>
