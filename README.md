@@ -30,7 +30,7 @@ Moving forward, required python dependencies are listed in requirements.txt. To 
 `pip install -r requirements.txt`
 
 ## Run
-Flask is the python library that provides the api for the model training and execution. To run flask, navigate to the directory that contains the python files (Python_scripts) in terminal or command prompt. Then run the command `python bauth_app.py` to execute. <br>
+Flask is the python library that provides the api for the model training and execution. To run flask, navigate to the directory that contains the python files (Python_scripts) in terminal or command prompt. Then run the command `python bauth_app.py` or `python3 bauth_app.py` to execute. <br>
 Output:  `Running on http://127.0.0.1:5000/` <br>
 Open http://127.0.0.1:5000/ in your browser. <br>
 By default, Flask runs on port 5000, but you can change which port you wish using the command: `flask run --port=<Port_number>` 
