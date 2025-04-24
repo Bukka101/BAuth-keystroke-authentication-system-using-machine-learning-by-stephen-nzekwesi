@@ -4,9 +4,9 @@
 class Enginess{
 
 	private $host = 'localhost';
-	private $user = 'xpressm2_keystroke';
-	private $password = '_keystroke!';
-	private $DB ='xpressm2_keystroke';
+	private $user = 'root';
+	private $password = '';
+	private $DB ='bauth';
 
 
 	function test_conn(){
@@ -17,20 +17,19 @@ class Enginess{
 }
 
 
-function train_model($model_id,$name,$dataset_name,$date_trained,$type,$path){
+function train_model($model_id,$name,$dataset_name,$date_trained,$type){
  		$conn = mysqli_connect($this->host,$this->user,$this->password,$this->DB);
  		    $model_id=mysqli_escape_string($conn,htmlentities(trim($model_id)));
 			$name=mysqli_escape_string($conn,htmlentities(trim($name)));
 			$dataset_name=mysqli_escape_string($conn,htmlentities(trim($dataset_name)));
 			$date_trained=mysqli_escape_string($conn,htmlentities(trim($date_trained)));
 			$type=mysqli_escape_string($conn,htmlentities(trim($type)));
-			$path=mysqli_escape_string($conn,htmlentities(trim($path)));
 			
 			
-			$sql='INSERT INTO model(model_id,name,dataset_name,date_trained,type,path)VALUES(?,?,?,?,?,?)';
+			$sql='INSERT INTO model(model_id,name,dataset_name,date_trained,type)VALUES(?,?,?,?,?)';
 								$query = $conn->prepare($sql);
 
-									$query->bind_param('ssssss',$model_id,$name,$dataset_name,$date_trained,$type,$path);
+									$query->bind_param('sssss',$model_id,$name,$dataset_name,$date_trained,$type);
 														if ($query->execute()) {
         echo "<script>alert('Model Trained Successfully!'); window.location.href='index.php?action=model';</script>";
     } else {
@@ -344,7 +343,7 @@ if ($result->num_rows === 1) {
         }
 
     } else {
-        echo "<script>alert('Login succesful with password only.'); </script>";
+        echo "<script>alert('Login successful with password only.'); </script>";
     }
 
 } else {
@@ -408,9 +407,6 @@ function getPerformanceMetrics() {
 
 
 }
-
-
-
 
 
 

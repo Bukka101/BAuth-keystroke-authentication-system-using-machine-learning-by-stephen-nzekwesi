@@ -34,8 +34,7 @@ $action ='';
         $dataset = $_FILES['dataset_name'];
         $date_trained = date("Y-m-d");
         $type = $_POST['type'];
-        $filePath = $_POST['save_path'];
-        $datasetName = $_FILES["dataset_name"]["name"];
+        $datasetName = $dataset["name"];
        
    
     // Send to Flask API
@@ -43,7 +42,6 @@ $action ='';
             $postData = [
                 'model_name' => $name,
                 'model_type' => $type,
-                'path' => $filePath,
                 'dataset' => $cfile
             ];
 
@@ -63,7 +61,7 @@ $action ='';
         // Only save to database if Flask responded with success
         if ($httpCode == 200 && isset($responseData['status']) && $responseData['status'] == 'success') {
 
-        $Call->train_model($model_ID, $name,$datasetName,$date_trained,$type,$filePath);
+        $Call->train_model($model_ID, $name,$datasetName,$date_trained,$type);
         echo "<p><strong>Model trained and saved successfully:</strong></p>";
     }
     else {
@@ -80,7 +78,7 @@ $action ='';
     $info = $Call->get_user('model', 'model_id', $model_id);
         }
         else {
-    die("User ID not provided.");
+    die("Model ID not provided.");
     }
     
     if (isset($_POST['update_model'])) {
@@ -102,7 +100,7 @@ $action ='';
     $info = $Call->get_user('model', 'model_id', $model_id);
         }
         else {
-    die("User ID not provided.");
+    die("Model ID not provided.");
     }
     require_once 'View/view_single_model.php';
     break;
@@ -127,22 +125,15 @@ $action ='';
 
         if (!$modelName) {
             echo "<script>alert('Keystroke authentication active, but no active model found.'); </script>";
-           
-        } else {
-            // Build model_path
-            $basePath = "/Users/Bukka/Courseworks/system/";
-            $modelPath = $basePath . $modelName . ".joblib";
+        } 
+        else {
+        // Send keystroke JSON to Flask
+             $jsonData = [
+                "model_name" => $modelName,
+                "data" => json_decode($jsonText, true)
+            ];
             
-            // Merge JSON input
-            $data = json_decode($jsonText, true);
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                echo "<script>alert('Invalid JSON format.'); </script>";
-                
-            } else {
-                $data['model_path'] = $modelPath;
-               
-                // Send to Flask
-                $payload = json_encode($data);
+                $payload = json_encode($jsonData);
                 $ch = curl_init('http://127.0.0.1:5000/predict');
                 curl_setopt($ch, CURLOPT_POST, true);
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -152,9 +143,8 @@ $action ='';
                 curl_close($ch);
             }
         }
+}
 
-}
-}
     require_once 'View/test.php';
     break;
     
