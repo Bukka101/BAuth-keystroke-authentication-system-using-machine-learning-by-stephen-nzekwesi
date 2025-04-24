@@ -88,6 +88,20 @@ function fetch_models(){
 }
 
 
+// Function to check if model_ID exists
+function modelIDExists($model_ID) {
+    $conn = mysqli_connect($this->host,$this->user,$this->password,$this->DB);
+     
+    $stmt = $conn->prepare("SELECT COUNT(*) FROM model WHERE model_id = ?");
+    $stmt->bind_param("s", $model_ID);
+    $stmt->execute();
+    $stmt->bind_result($count);
+    $stmt->fetch();
+    $stmt->close();
+    return $count > 0;
+}
+
+
 // Fetch users from database
 function fetch_users(){
     $conn = mysqli_connect($this->host,$this->user,$this->password,$this->DB);
@@ -180,6 +194,25 @@ ini_set('display_errors', 1);
    
 } 
 
+
+function get_model_name($table, $field, $active){
+    error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+    $conn = mysqli_connect($this->host,$this->user,$this->password,$this->DB);
+    
+    $sql = "SELECT name FROM $table WHERE $field = '$active' ";
+   $query = $conn->query($sql) or print(mysqli_error($conn));
+    $row = mysqli_fetch_array($query);
+					if ($query == true) {
+						return $row;
+							}else{
+								return false;
+									}
+									$conn->close();
+   
+   
+} 
 
 function update_user($username, $password, $auth_type, $user_id){
     $conn = mysqli_connect($this->host,$this->user,$this->password,$this->DB);
@@ -275,7 +308,6 @@ function delete_user($table, $field, $userID){
 
 }
 
-     
 function test_login($username, $password){
     $conn = mysqli_connect($this->host,$this->user,$this->password,$this->DB);
     
@@ -319,9 +351,66 @@ if ($result->num_rows === 1) {
     echo "<script>alert('Invalid credentials.'); </script>";
 }
 }
+     
+
+function test_auth_login($username, $password){
+    $conn = mysqli_connect($this->host,$this->user,$this->password,$this->DB);
+    
+    // Step 1: Validate user credentials
+$query = $conn->prepare("SELECT * FROM users WHERE username = ? AND password = ?");
+$query->bind_param("ss", $username, $password);
+$query->execute();
+$result = $query->get_result()->fetch_assoc();
+
+}
+
+function get_user_auth_type($username, $password) {
+    $conn = mysqli_connect($this->host,$this->user,$this->password,$this->DB);
+    
+    $stmt = $conn->prepare("SELECT auth_type FROM users WHERE username = ? AND password = ?");
+    $stmt->bind_param("ss", $username, $password);
+    $stmt->execute();
+    $stmt->bind_result($authType);
+    $stmt->fetch();
+    $stmt->close();
+    return $authType;
+}
+
+function get_active_model_name($status) {
+    $conn = mysqli_connect($this->host,$this->user,$this->password,$this->DB);
+    
+    $stmt = $conn->prepare("SELECT name FROM model WHERE status = ?");
+    $stmt->bind_param("s", $status);
+    $stmt->execute();
+    $stmt->bind_result($modelName);
+    $stmt->fetch();
+    $stmt->close();
+    return $modelName;
+}
+
+    // Fetch performance counts from a log table
+function getPerformanceMetrics() {
+    $conn = mysqli_connect($this->host,$this->user,$this->password,$this->DB);
+    
+        $query = "SELECT result_type, COUNT(*) as count FROM auth_logs GROUP BY result_type";
+        $result = $this->conn->query($query);
+
+        $metrics = ['TP' => 0, 'TN' => 0, 'FP' => 0, 'FN' => 0];
+        while ($row = $result->fetch_assoc()) {
+            $type = strtoupper($row['result_type']);
+            if (isset($metrics[$type])) {
+                $metrics[$type] = $row['count'];
+            }
+        }
+
+        return $metrics;
+    }
 
 
 }
+
+
+
 
 
 

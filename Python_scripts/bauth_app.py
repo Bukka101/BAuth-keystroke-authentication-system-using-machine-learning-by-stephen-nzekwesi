@@ -25,13 +25,12 @@ def home():
 def train_model():
 # Inspect inputs. inspects supplied input to ascertain they are supposed as expected
 # train model and save to file
-# input: model name, model type, path, dataset
+# input: model name (str), model type ('RF' or 'SVM'), dataset (cvs file)
 # output: success Or fail safe
     try:
         # Get and handle variables from form data
         model_name = request.form.get('model_name').strip()
         model_type = request.form.get('model_type').strip()
-        path = request.form.get('path').strip()
 
         if not isinstance(model_name, str) or not model_name:
             return jsonify({"error": "Model name must be a non-empty string."}), 400
@@ -40,12 +39,6 @@ def train_model():
 
         if model_type not in ["RF", "SVM"] or not model_type:
             return jsonify({"error": "Model type must be either 'RF' or 'SVM'."}), 400
-
-        if not (path.endswith("/") or path.endswith("\\")):
-            return jsonify({"error": "path must end with either '/' or '\\'."}), 400
-
-        if not os.path.isabs(path) and os.access(path, os.W_OK):
-            return jsonify({"error": "Invalid or non-writable system path."}), 400
 
         # Handle uploaded file
         if 'dataset' not in request.files:
@@ -69,8 +62,8 @@ def train_model():
         dataset.seek(0) # Reset dataset pointer
 
         # Run model training
-        if run_train(model_name, dataset, model_type, path) ==  1:
-            return jsonify({"message": "Model training successful. Model files has been saved locally on the path provided"}), 200
+        if run_train(model_name, dataset, model_type) ==  1:
+            return jsonify({"message": "Model training successful. Model files has been saved"}), 200
         else:
             return jsonify({"error": "Model training failed."}), 500
 
@@ -83,7 +76,7 @@ def train_model():
 def model_pred():
 # Inspect inputs. inspects supplied input to ascertain they are supposed as expected
 # run prediction
-# input: JSON data containing model and keystroke data
+# input: JSON data containing model name and keystroke data
 # output: predicted user Or fail safe
     try:
         if not request.is_json:
@@ -91,8 +84,8 @@ def model_pred():
 
         data = request.get_json()
 
-        if 'model_path' not in data:
-            return jsonify({"error": "model path data must be present in json"}), 400
+        if 'model_name' not in data:
+            return jsonify({"error": "model name must be specified in json data"}), 400
 
         prediction = run_pred(data)
         return jsonify({"Prediction": prediction}), 200

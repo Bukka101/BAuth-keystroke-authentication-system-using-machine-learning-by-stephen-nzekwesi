@@ -11,6 +11,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
 import joblib
 import statistics
+from pathlib import Path
 
 
 # In[ ]:
@@ -107,17 +108,19 @@ def svm_model(X, y):
 
 
 # train model - save model files to disk
-# input: model name (str), dataset (csv), model type ('RF' or 'SVM'), system location to save model (str)
+# input: model name (str), dataset (csv file), model type ('RF' or 'SVM')
 # output: 1 on success
 
-def run_train(model_name, dataset, model_type, path):
+def run_train(model_name, dataset, model_type):
     """Inspect inputs
     Process dataset
     Split dataframe into features and target
     Train model
     dump model files to disk
     """
-    m_name, m_dataset, m_type, m_path = model_name, dataset, model_type, path
+    m_name, m_dataset, m_type = model_name, dataset, model_type
+    m_path = Path.home() / "BAuth" / "model_files"
+    m_path.mkdir(parents=True, exist_ok=True)
 
     df, scaler = process_dataset(m_dataset)
 
@@ -128,8 +131,11 @@ def run_train(model_name, dataset, model_type, path):
     elif m_type == "SVM":
         model = svm_model(X, y)
 
-    m_full_path = m_path + m_name + ".joblib"
-    s_full_path = m_path + m_name + "_scaler" +".joblib"
+    model_full_name = m_name + ".joblib"
+    scaler_full_name = m_name + "_scaler.joblib"
+
+    m_full_path = m_path / model_full_name
+    s_full_path = m_path / scaler_full_name
     joblib.dump(model, m_full_path)
     joblib.dump(scaler, s_full_path)
 
@@ -143,15 +149,16 @@ def run_train(model_name, dataset, model_type, path):
 # Confirm input has expected keys needed for prediction
 # Process and scale data using model scaler
 # Predict user using specified model
-# Input: model_path (absolute path of the model on disk), keystroke (dictionary of user's keystroke data)
+# Input: dictionary containing model name, and user's keystroke data
 # Output: predicted user ID
 
 def run_pred(keystroke):
-    m_path = keystroke['model_path']
-    del keystroke['model_path']
-    expected_keys = ['H.period', 'DD.period.t', 'UD.period.t', 'H.t', 'DD.t.i', 'UD.t.i', 'H.i', 'DD.i.e', 'UD.i.e', 'H.e', 'DD.e.five', 'UD.e.five', 'H.five', 'DD.five.Shift.r', 'UD.five.Shift.r', 'H.Shift.r', 'DD.Shift.r.o', 'UD.Shift.r.o', 'H.o', 'DD.o.a', 'UD.o.a', 'H.a', 'DD.a.n', 'UD.a.n', 'H.n', 'DD.n.l', 'UD.n.l', 'H.l', 'DD.l.Return', 'UD.l.Return', 'H.Return']
+    model_fullname = keystroke['model_name'] + ".joblib"
+    m_path = Path.home() / "BAuth" / "model_files" / model_fullname
+    del keystroke['model_name']
+    required_keys = ['H.period', 'DD.period.t', 'UD.period.t', 'H.t', 'DD.t.i', 'UD.t.i', 'H.i', 'DD.i.e', 'UD.i.e', 'H.e', 'DD.e.five', 'UD.e.five', 'H.five', 'DD.five.Shift.r', 'UD.five.Shift.r', 'H.Shift.r', 'DD.Shift.r.o', 'UD.Shift.r.o', 'H.o', 'DD.o.a', 'UD.o.a', 'H.a', 'DD.a.n', 'UD.a.n', 'H.n', 'DD.n.l', 'UD.n.l', 'H.l', 'DD.l.Return', 'UD.l.Return', 'H.Return']
 
-    if list(keystroke.keys()) == expected_keys:
+    if set(required_keys).issubset(keystroke):
 
         ks_values = list(keystroke.values())
         # Compute statistics
@@ -168,7 +175,7 @@ def run_pred(keystroke):
         # Return prediction
         try:
             model = joblib.load(m_path)
-            scaler = joblib.load(m_path.replace(".joblib", "_scaler.joblib"))
+            scaler = joblib.load(m_path.with_name(m_path.name.replace(".joblib", "_scaler.joblib")))
 
             keystroke = pd.DataFrame(keystroke, index=[0])
 

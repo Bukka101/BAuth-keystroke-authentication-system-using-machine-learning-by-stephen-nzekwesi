@@ -242,7 +242,7 @@ input[readonly] {
 
         .login-container {
             max-width: 400px;
-            margin: 50px auto;
+            margin: 100px auto;
             padding: 25px;
             background-color: #f2f2f2;
             border-radius: 10px;
@@ -261,4 +261,41 @@ input[readonly] {
             background-color: #007bff;
             color: white;
             border: none;
+        }
+
+.result-box {
+            max-width: 600px;
+            margin: 50px auto;
+            background: #f9f9f9;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .metrics {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 30px;
+        }
+        .metric {
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            width: 40%;
+        }
+        .true-positive { background-color: #d4edda; color: #155724; }
+        .true-negative { background-color: #d1ecf1; color: #0c5460; }
+        .false-positive { background-color: #f8d7da; color: #721c24; }
+        .false-negative { background-color: #fff3cd; color: #856404; }
+        
+        .chart-container {
+            width: 60%;
+            max-width: 500px;
+            margin: 50px auto;
+            background: #f5f5f5;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        canvas {
+            margin-top: 30px;
         }

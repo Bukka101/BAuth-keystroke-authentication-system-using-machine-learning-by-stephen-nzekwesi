@@ -1,13 +1,5 @@
-<?php
-// Get the full directory path of where the model will be saved
-$modelSavePath = realpath(__DIR__) . DIRECTORY_SEPARATOR . "trained_models" . DIRECTORY_SEPARATOR;
 
-// Ensure directory exists
-if (!file_exists($modelSavePath)) {
-    mkdir($modelSavePath, 0777, true);
-}
-?>
-<h2>Model Management</h2>
+<h2>Train Model</h2>
 
    <section id="train">
         <form method="post" enctype="multipart/form-data">
@@ -27,10 +19,14 @@ if (!file_exists($modelSavePath)) {
                 <option value="SVM">SVM</option>
             </select><br><br>
 
-        <label for="file_path">Select Folder to Save Model:</label>
-        <input type="text" id="file_path" name="file_path" placeholder="Browse to select folder" readonly>
-        <button type="button" onclick="selectFolder()">Browse</button>
-        <br><br>
+      <label>Choose Folder to Save Model:</label><br>
+    <!-- Hidden folder picker -->
+    <input type="file" id="folderInput" webkitdirectory directory style="display:none;" onchange="getFolderName(this)">
+    
+    <!-- Text input to display selected folder -->
+    <input type="text" name="save_path" id="savePath" readonly required placeholder="Select a folder...">
+    <button type="button" onclick="document.getElementById('folderInput').click()">Browse</button><br><br>
+
 
             <!-- Train and Cancel Buttons -->
             <button type="submit" name="train">Train</button>
@@ -38,22 +34,16 @@ if (!file_exists($modelSavePath)) {
         </form>
     </section>
 
-   <script>
-        function selectFolder() {
-            const input = document.createElement("input");
-            input.type = "file";
-            input.setAttribute("nwdirectory", ""); // Works in NW.js
-            input.setAttribute("webkitdirectory", ""); // Works in Chrome-based browsers
-            input.setAttribute("directory", ""); // Standard attribute
+ <script>
+function getFolderName(input) {
+    if (input.files.length > 0) {
+        const relativePath = input.files[0].webkitRelativePath;
+        const folder = relativePath.split('/')[0];
+        document.getElementById('savePath').value = '/' + folder + '/';
+    }
+}
+</script>
 
-            input.onchange = function(event) {
-                if (event.target.files.length > 0) {
-                    let path = event.target.files[0].path || event.target.files[0].webkitRelativePath;
-                    document.getElementById("file_path").value = path.substring(0, path.lastIndexOf("/"));
-                }
-            };
+   
 
-            input.click();
-        }
-    </script>
-
+   

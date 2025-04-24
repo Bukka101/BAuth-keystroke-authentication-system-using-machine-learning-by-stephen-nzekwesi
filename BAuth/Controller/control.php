@@ -3,6 +3,8 @@
 ?>
 
 <?php 
+$response = null;
+$notice = null;
 $action ='';
     if (!empty($_GET['action'])) {
       $action = $_GET['action'];
@@ -17,32 +19,58 @@ $action ='';
     break;
 
     case 'model':
-        $modelID = rand(02,99);
-        $model_ID = m0 . $modelID;
+      //  $modelID = rand(02,99);
+      //  $model_ID = m0 . $modelID;
+        
+        // Generate unique model_ID
+    do {
+    $modelID = str_pad(rand(2, 99), 2, '0', STR_PAD_LEFT); // Ensure 2 digits
+    $model_ID = 'm0' . $modelID;
+        } while ($Call->modelIDExists($model_ID));
+
         
         if (isset($_POST['train'])) {
         $name = $_POST['model_name'];
-        //$dataset_name = $_POST['dataset_name'];
+        $dataset = $_FILES['dataset_name'];
         $date_trained = date("Y-m-d");
         $type = $_POST['type'];
-        $filePath = $_POST['file_path'];
+        $filePath = $_POST['save_path'];
+        $datasetName = $_FILES["dataset_name"]["name"];
        
-        // Handle File Upload (Dataset)
-    if (isset($_FILES["dataset_name"]) && $_FILES["dataset_name"]["error"] == 0) {
-        $datasetName = basename($_FILES["dataset_name"]["name"]);
-        $datasetPath = "View/assets/dataset/" . $datasetName; // Folder to store files
+   
+    // Send to Flask API
+            $cfile = new CURLFile($dataset['tmp_name'], 'text/csv', $datasetName);
+            $postData = [
+                'model_name' => $name,
+                'model_type' => $type,
+                'path' => $filePath,
+                'dataset' => $cfile
+            ];
 
-        // Move uploaded file to server folder
-        if (!move_uploaded_file($_FILES["dataset_name"]["tmp_name"], $datasetPath)) {
-            die("Error uploading dataset.");
-        }
+            $ch = curl_init("http://127.0.0.1:5000/train");
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $err = curl_error($ch);
+            curl_close($ch);
+            
+             // Decode Flask response
+        $responseData = json_decode($response, true);
+
+        // Only save to database if Flask responded with success
+        if ($httpCode == 200 && isset($responseData['status']) && $responseData['status'] == 'success') {
+
         $Call->train_model($model_ID, $name,$datasetName,$date_trained,$type,$filePath);
-    } else {
-        die("Please upload a dataset.");
+        echo "<p><strong>Model trained and saved successfully:</strong></p>";
     }
-
-
+    else {
+        echo "<p><strong>Error training model:</strong></p>";
+        echo "<pre>Flask Response:\n" . print_r($responseData, true) . "</pre>";
       }
+    }
     require_once 'View/model.php';
     break;
   
@@ -52,7 +80,7 @@ $action ='';
     $info = $Call->get_user('model', 'model_id', $model_id);
         }
         else {
-    die("Model ID not provided.");
+    die("User ID not provided.");
     }
     
     if (isset($_POST['update_model'])) {
@@ -74,20 +102,58 @@ $action ='';
     $info = $Call->get_user('model', 'model_id', $model_id);
         }
         else {
-    die("Model ID not provided.");
+    die("User ID not provided.");
     }
     require_once 'View/view_single_model.php';
     break;
     
     
     case 'test':
-           if (isset($_POST['test_login'])) {
+        if (isset($_POST['test_login'])) {
     $username = $_POST['username'];
     $password = $_POST['password'];
-    $keystrokeInput = $_POST['keystroke_input'];
-    $keystrokeData = json_decode($_POST['keystroke_data'], true);
-    
-    $Call->test_login($username, $password);
+    $status = 'Active';
+    $jsonText = $_POST['json_data'];
+   
+     $authType = $Call->get_user_auth_type($username, $password);
+
+    if (!$authType) {
+        $notice = "Invalid username or password.";
+    } elseif (strpos($authType, 'ks') === false) {
+        echo "<script>alert('Login successful... User only has username-password authentication enabled!'); </script>";
+        
+    }else {
+        $modelName = $Call->get_active_model_name($status);
+
+        if (!$modelName) {
+            echo "<script>alert('Keystroke authentication active, but no active model found.'); </script>";
+           
+        } else {
+            // Build model_path
+            $basePath = "/Users/Bukka/Courseworks/system/";
+            $modelPath = $basePath . $modelName . ".joblib";
+            
+            // Merge JSON input
+            $data = json_decode($jsonText, true);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                echo "<script>alert('Invalid JSON format.'); </script>";
+                
+            } else {
+                $data['model_path'] = $modelPath;
+               
+                // Send to Flask
+                $payload = json_encode($data);
+                $ch = curl_init('http://127.0.0.1:5000/predict');
+                curl_setopt($ch, CURLOPT_POST, true);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+                $response = curl_exec($ch);
+                curl_close($ch);
+            }
+        }
+
+}
 }
     require_once 'View/test.php';
     break;
@@ -119,7 +185,7 @@ $action ='';
     if (isset($_POST['update'])) {
         $user_id = $_POST['user_id'];
         $username = $_POST['username'];
-        $password = password_hash($_POST["password"], PASSWORD_BCRYPT); //Encrypt password
+        $password = $_POST["password"]; //Encrypt password
         $auth_type = $_POST['auth_type'];
         if($username != "" || $password != ""){
             $Call->update_user($username, $password, $auth_type, $user_id);
@@ -175,6 +241,9 @@ $action ='';
     break;
 
      case 'performance':
+    //     $model = new PerformanceModel();
+    //$metrics = $model->getPerformanceMetrics();
+
     require_once 'View/performance.php';
     break;
 
