@@ -1,33 +1,33 @@
+<h2 class="train-title">Train Model</h2>
 
-<h2>Train Model</h2>
-
-   <section id="train">
-        <form method="post" enctype="multipart/form-data">
-            <!-- Model Name -->
+<section id="train" class="train-section">
+    <form class="train-form" method="post" enctype="multipart/form-data">
+        <!-- Model Name -->
+        <div class="form-group">
             <label for="modelName">Model Name:</label>
-            <input type="text" id="modelName" name="model_name" placeholder="Enter model name" required><br><br>
+            <input type="text" id="modelName" name="model_name" placeholder="Enter model name" required>
+        </div>
 
-            <!-- Select Dataset -->
+        <!-- Select Dataset -->
+        <div class="form-group">
             <label for="dataset">Select Dataset (CSV):</label>
-            <input type="file" id="dataset" name="dataset_name" accept=".csv" required><br><br>
+            <input type="file" id="dataset" name="dataset_name" accept=".csv" required>
+        </div>
 
-            <!-- Model Type -->
+        <!-- Model Type -->
+        <div class="form-group">
             <label for="modelType">Model Type:</label>
             <select id="modelType" name="type" required>
                 <option value="SVM">Select Model Type</option>
-                <option value="Random Forest">Random Forest</option>
+                <option value="Random Forest">RF</option>
                 <option value="SVM">SVM</option>
-            </select><br><br>
+            </select>
+        </div>
 
-     
-            <!-- Train and Cancel Buttons -->
-            <button type="submit" name="train">Train</button>
-            <button type="reset">Cancel</button>
-        </form>
-    </section>
-
-
-
-   
-
-   
+        <!-- Buttons -->
+        <div class="form-buttons">
+            <button class="btn" type="submit" name="train">Train</button>
+            <button class="btn cancel" type="reset">Cancel</button>
+        </div>
+    </form>
+</section>

@@ -1,8 +1,14 @@
-document.addEventListener("DOMContentLoaded", function() {
-    const menuIcon = document.querySelector(".menu-icon");
-    const navbar = document.querySelector(".navbar");
+document.addEventListener('DOMContentLoaded', () => {
+    const hamburger = document.getElementById('hamburger');
+    const navMenu = document.getElementById('nav-menu');
 
-    menuIcon.addEventListener("click", function() {
-        navbar.classList.toggle("active");
+    hamburger.addEventListener('click', () => {
+        navMenu.classList.toggle('show');
     });
 });
+
+// JavaScript to toggle the mobile menu visibility
+function toggleMenu() {
+    var navLinks = document.querySelector('.nav-links');
+    navLinks.classList.toggle('active');
+}

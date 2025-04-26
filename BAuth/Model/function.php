@@ -4,9 +4,9 @@
 class Enginess{
 
 	private $host = 'localhost';
-	private $user = 'root';
-	private $password = '';
-	private $DB ='bauth';
+	private $user = 'xpressm2_keystroke';
+	private $password = '_keystroke!';
+	private $DB ='xpressm2_keystroke';
 
 
 	function test_conn(){
@@ -35,6 +35,7 @@ function train_model($model_id,$name,$dataset_name,$date_trained,$type){
     } else {
         echo "Error: " . $query->error;
     }
+}
 
 // create new user
 function new_user($user_id,$username,$password,$auth_type){
@@ -55,7 +56,24 @@ function new_user($user_id,$username,$password,$auth_type){
         echo "Error: " . $query->error;
     }
 
-	}																					}
+	}
+	
+    
+function logPrediction($model_id, $user_id, $ts, $tp, $tn, $fp, $fn) {
+    $conn = mysqli_connect($this->host,$this->user,$this->password,$this->DB);
+    
+    $sql = "INSERT INTO model_performance (model_id, user_id, timestamp, true_positive, true_negative, false_positive, false_negative) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("sssiiii", $model_id, $user_id, $ts, $tp, $tn, $fp, $fn);
+        if ($stmt->execute()) {
+    echo "<script>alert('Model Performance saved'); </script>";
+    $stmt->close();
+        }
+        else {
+        echo "Error: " . $stmt->error;
+    }
+    
+}
 
 // Fetch models from database
 function fetch_models(){
@@ -105,7 +123,7 @@ function modelIDExists($model_ID) {
 function fetch_users(){
     $conn = mysqli_connect($this->host,$this->user,$this->password,$this->DB);
     
-    $sql = "SELECT user_id, username, password, auth_type FROM users ORDER BY user_id DESC";
+    $sql = "SELECT user_id, username, auth_type FROM users ORDER BY user_id DESC";
     $query = $conn->prepare($sql);
     $query->execute();
 						$result =$query->get_result();
@@ -114,7 +132,6 @@ function fetch_users(){
                 echo "<tr>
                         <td>{$row['user_id']}</td>
                         <td>{$row['username']}</td>
-                        <td>{$row['password']}</td>
                         <td>{$row['auth_type']}</td>
                         <td>
                             <a href='?action=assign_auth&&user_id={$row['user_id']}'>Assign Auth</a> | 
@@ -258,7 +275,7 @@ function assign_auth($auth_type, $user_id){
     $query->bind_param("ss", $auth_type, $user_id);
 
     if ($query->execute()) {
-        echo "<script>alert('Keystroke Auth assigned successfully!'); window.location.href='index.php?action=users';</script>";
+        echo "<script>alert('Keystroke Auth assigned successfully!'); window.location.href='index.php?action=assign_auth';</script>";
     } else {
         echo "Error updating record: " . $query->error;
     }
@@ -343,7 +360,7 @@ if ($result->num_rows === 1) {
         }
 
     } else {
-        echo "<script>alert('Login successful with password only.'); </script>";
+        echo "<script>alert('Login succesful with password only.'); </script>";
     }
 
 } else {
@@ -375,6 +392,18 @@ function get_user_auth_type($username, $password) {
     return $authType;
 }
 
+function get_user_id($username, $password) {
+    $conn = mysqli_connect($this->host,$this->user,$this->password,$this->DB);
+    
+    $stmt = $conn->prepare("SELECT user_id FROM users WHERE username = ? AND password = ?");
+    $stmt->bind_param("ss", $username, $password);
+    $stmt->execute();
+    $stmt->bind_result($user_id);
+    $stmt->fetch();
+    $stmt->close();
+    return $user_id;
+}
+
 function get_active_model_name($status) {
     $conn = mysqli_connect($this->host,$this->user,$this->password,$this->DB);
     
@@ -385,6 +414,18 @@ function get_active_model_name($status) {
     $stmt->fetch();
     $stmt->close();
     return $modelName;
+}
+
+function get_active_model_id($status) {
+    $conn = mysqli_connect($this->host,$this->user,$this->password,$this->DB);
+    
+    $stmt = $conn->prepare("SELECT model_id FROM model WHERE status = ?");
+    $stmt->bind_param("s", $status);
+    $stmt->execute();
+    $stmt->bind_result($modelID);
+    $stmt->fetch();
+    $stmt->close();
+    return $modelID;
 }
 
     // Fetch performance counts from a log table
@@ -404,8 +445,52 @@ function getPerformanceMetrics() {
 
         return $metrics;
     }
+    
+   function getModelPerformanceData() {
+       $conn = mysqli_connect($this->host,$this->user,$this->password,$this->DB);
+       
+    $sql = "SELECT 
+                SUM(true_positive) AS tp, 
+                SUM(true_negative) AS tn, 
+                SUM(false_positive) AS fp, 
+                SUM(false_negative) AS fn 
+            FROM model_performance";
+    $result = $conn->query($sql);
+    return $result->fetch_assoc();
+}
+
+}
 
 
+function getUserCount() {
+    $conn = mysqli_connect($this->host,$this->user,$this->password,$this->DB);
+    $query = $conn->prepare("SELECT COUNT(*) FROM users");
+    $query->execute();
+    $query->bind_result($count);
+    $query->fetch();
+    $query->close();
+    return $count;
+    
+}
+
+function getModelCount() {
+    $conn = mysqli_connect($this->host,$this->user,$this->password,$this->DB);
+    $query = $conn->query("SELECT COUNT(*) FROM model");
+    return $query->fetchColumn();
+}
+
+function getKeystrokeUserCount() {
+    $conn = mysqli_connect($this->host,$this->user,$this->password,$this->DB);
+    $query = $conn->query("SELECT COUNT(*) FROM users WHERE auth_type LIKE '%kPassword + ks%'");
+    return $query->fetchColumn();
+}
+
+function getTodayLoginAttempts() {
+    $conn = mysqli_connect($this->host,$this->user,$this->password,$this->DB);
+    $today = date('Y-m-d');
+    $query = $conn->prepare("SELECT COUNT(*) FROM model_performance WHERE DATE(timestamp) = ?");
+    $query->execute([$today]);
+    return $query->fetchColumn();
 }
 
 

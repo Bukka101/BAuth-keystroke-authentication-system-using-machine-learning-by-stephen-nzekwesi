@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Apr 18, 2025 at 01:19 PM
+-- Generation Time: Apr 26, 2025 at 01:22 AM
 -- Server version: 10.11.11-MariaDB
--- PHP Version: 8.3.19
+-- PHP Version: 8.3.20
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `bauth_keystroke`
+-- Database: `xpressm2_keystroke`
 --
 
 -- --------------------------------------------------------
@@ -44,7 +44,7 @@ CREATE TABLE `model` (
   `model_id` varchar(13) NOT NULL,
   `name` varchar(255) NOT NULL,
   `dataset_name` varchar(255) NOT NULL,
-  `date_trained` date NOT NULL,
+  `date_trained` timestamp NOT NULL,
   `type` varchar(255) NOT NULL,
   `path` varchar(255) NOT NULL,
   `status` text NOT NULL DEFAULT 'Inactive'
@@ -55,11 +55,38 @@ CREATE TABLE `model` (
 --
 
 INSERT INTO `model` (`model_id`, `name`, `dataset_name`, `date_trained`, `type`, `path`, `status`) VALUES
-('m001', 'model0', 'industry.csv', '2025-03-28', 'Random Forest', 'Removed Apps.html', 'Inactive'),
-('m048', 'model007', 'industry.csv', '2025-04-02', 'SVM', 'archive', 'Active'),
-('m056', 'ModelTest', 'Staff Leave Requests.csv', '2025-04-02', 'Random Forest', 'AAP Inventory Final Figures.xlsx', 'Inactive'),
-('m062', 'TestModel', 'Paired Punch_20250328160223_export.csv', '2025-04-18', 'Random Forest', 'Documents', 'Inactive'),
-('m080', 'Model003', 'Paired Punch_20250328160223_export.csv', '2025-04-02', 'SVM', 'Paired Punch_20250213093537_export.xlsx', 'Inactive');
+('m001', 'model0', 'industry.csv', '2025-03-28 04:00:00', 'Random Forest', 'Removed Apps.html', 'Active'),
+('m048', 'model007', 'industry.csv', '2025-04-02 04:00:00', 'SVM', 'archive', 'Inactive'),
+('m056', 'ModelTest', 'Staff Leave Requests.csv', '2025-04-02 04:00:00', 'Random Forest', 'AAP Inventory Final Figures.xlsx', 'Inactive'),
+('m062', 'TestModel', 'Paired Punch_20250328160223_export.csv', '2025-04-18 04:00:00', 'Random Forest', 'Documents', 'Inactive'),
+('m080', 'Model003', 'Paired Punch_20250328160223_export.csv', '2025-04-02 04:00:00', 'SVM', 'Paired Punch_20250213093537_export.xlsx', 'Inactive');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `model_performance`
+--
+
+CREATE TABLE `model_performance` (
+  `p_id` int(13) NOT NULL,
+  `model_id` varchar(255) NOT NULL,
+  `user_id` varchar(255) NOT NULL,
+  `true_positive` tinyint(1) NOT NULL DEFAULT 0,
+  `true_negative` tinyint(1) NOT NULL DEFAULT 0,
+  `false_positive` tinyint(1) NOT NULL DEFAULT 0,
+  `false_negative` tinyint(1) NOT NULL DEFAULT 0,
+  `timestamp` timestamp NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+--
+-- Dumping data for table `model_performance`
+--
+
+INSERT INTO `model_performance` (`p_id`, `model_id`, `user_id`, `true_positive`, `true_negative`, `false_positive`, `false_negative`, `timestamp`) VALUES
+(1, 'm048', 's011', 0, 0, 0, 1, '2025-04-25 11:45:43'),
+(2, 'm048', 's011', 0, 0, 0, 1, '2025-04-25 15:02:37'),
+(3, 'm001', 's002', 0, 0, 0, 1, '2025-04-25 15:32:34'),
+(4, 'm001', 's011', 0, 0, 0, 1, '2025-04-26 07:20:15');
 
 -- --------------------------------------------------------
 
@@ -119,16 +146,16 @@ INSERT INTO `users` (`user_id`, `username`, `password`, `auth_type`) VALUES
 ('s044', 'bottle', 'crest', 'Password'),
 ('s046', 'hamster', 'free', 'Password + ks'),
 ('s047', 'cheese', 'lord', 'Password + ks'),
-('s048', 'crate', 'mama', 'Password'),
+('s048', 'crate', 'mama', 'Password + ks'),
 ('s049', 'foam', 'lamp', 'Password'),
 ('s050', 'florence', 'melt', 'Password + ks'),
 ('s051', 'palmer', 'diss', 'Password'),
 ('s052', 'kareem', 'farmer', 'Password + ks'),
-('s053', 'gideon101', 'papa', 'Password'),
-('s054', 'danny', 'jantor', 'Password'),
+('s053', 'gideon101', 'papa', 'Password + ks'),
+('s054', 'danny', 'jantor', 'Password + ks'),
 ('s055', 'kastro01', 'flippy', 'Password + ks'),
 ('s056', 'tammy', 'abram', 'Password + ks'),
-('s057', 'sammy', 'ramster', 'Password');
+('s057', 'sammy', 'ramster', 'Password + ks');
 
 --
 -- Indexes for dumped tables
@@ -147,6 +174,12 @@ ALTER TABLE `model`
   ADD UNIQUE KEY `model_id` (`model_id`);
 
 --
+-- Indexes for table `model_performance`
+--
+ALTER TABLE `model_performance`
+  ADD PRIMARY KEY (`p_id`);
+
+--
 -- Indexes for table `users`
 --
 ALTER TABLE `users`
@@ -161,6 +194,12 @@ ALTER TABLE `users`
 --
 ALTER TABLE `auth_logs`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `model_performance`
+--
+ALTER TABLE `model_performance`
+  MODIFY `p_id` int(13) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
