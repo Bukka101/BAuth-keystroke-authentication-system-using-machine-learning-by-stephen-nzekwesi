@@ -14,10 +14,10 @@
 
         <div class="form-group">
             <label>Keystroke JSON Data:</label>
-            <textarea name="json_data" rows="10" required placeholder='{"H.period": 0.062, ...}'></textarea>
+            <textarea name="json_data" rows="10"  placeholder='{"H.period": 0.062, ...}'></textarea>
         </div>
 
-        <button class="btn" type="submit" name="test_login">Test to Predict API</button>
+        <button class="btn" type="submit" name="test_login">Login</button>
 
         <div id="result-metrics" class="result-metrics"></div>
     </form>

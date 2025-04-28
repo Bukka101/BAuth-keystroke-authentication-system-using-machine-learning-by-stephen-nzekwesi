@@ -857,6 +857,35 @@ canvas#performanceChart {
 }
 
 
+.test-outcome {
+    text-align: center;
+    margin: 40px auto;
+    max-width: 600px;
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 10px;
+}
+
+.user-results p {
+    font-size: 1.2em;
+    margin: 10px 0;
+}
+
+.btn-performance {
+    margin: 10px;
+    padding: 12px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    color: white;
+}
+
+.btn-performance.tp { background-color: #4CAF50; }
+.btn-performance.tn { background-color: #2196F3; }
+.btn-performance.fp { background-color: #FFC107; color: black; }
+.btn-performance.fn { background-color: #F44336; }
+
 
 
 
@@ -907,3 +936,25 @@ canvas#performanceChart {
     transform: translateY(-5px);
     background-color: #f0f8ff;
 }
+
+ .chart-container {
+            width: 80%;
+            margin: 50px auto;
+        }
+        h2, h3 {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .back-button, .model-select {
+            text-align: center;
+            margin: 20px;
+        }
+        .model-select select  {
+            padding: 10px 20px;
+            font-size: 16px;
+            width: 300px;
+        }
+        .back-button a {
+            padding: 10px 20px;
+            font-size: 16px;
+        }

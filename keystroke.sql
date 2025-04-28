@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Apr 26, 2025 at 01:22 AM
+-- Generation Time: Apr 27, 2025 at 09:32 AM
 -- Server version: 10.11.11-MariaDB
 -- PHP Version: 8.3.20
 
@@ -18,21 +18,8 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `xpressm2_keystroke`
+-- Database: `keystroke`
 --
-
--- --------------------------------------------------------
-
---
--- Table structure for table `auth_logs`
---
-
-CREATE TABLE `auth_logs` (
-  `id` int(11) NOT NULL,
-  `username` varchar(255) NOT NULL,
-  `result_type` enum('TP','TN','FP','FN') NOT NULL,
-  `model_name` varchar(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 -- --------------------------------------------------------
 
@@ -46,7 +33,6 @@ CREATE TABLE `model` (
   `dataset_name` varchar(255) NOT NULL,
   `date_trained` timestamp NOT NULL,
   `type` varchar(255) NOT NULL,
-  `path` varchar(255) NOT NULL,
   `status` text NOT NULL DEFAULT 'Inactive'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
@@ -54,12 +40,11 @@ CREATE TABLE `model` (
 -- Dumping data for table `model`
 --
 
-INSERT INTO `model` (`model_id`, `name`, `dataset_name`, `date_trained`, `type`, `path`, `status`) VALUES
-('m001', 'model0', 'industry.csv', '2025-03-28 04:00:00', 'Random Forest', 'Removed Apps.html', 'Active'),
-('m048', 'model007', 'industry.csv', '2025-04-02 04:00:00', 'SVM', 'archive', 'Inactive'),
-('m056', 'ModelTest', 'Staff Leave Requests.csv', '2025-04-02 04:00:00', 'Random Forest', 'AAP Inventory Final Figures.xlsx', 'Inactive'),
-('m062', 'TestModel', 'Paired Punch_20250328160223_export.csv', '2025-04-18 04:00:00', 'Random Forest', 'Documents', 'Inactive'),
-('m080', 'Model003', 'Paired Punch_20250328160223_export.csv', '2025-04-02 04:00:00', 'SVM', 'Paired Punch_20250213093537_export.xlsx', 'Inactive');
+INSERT INTO `model` (`model_id`, `name`, `dataset_name`, `date_trained`, `type`, `status`) VALUES
+('m001', 'model0', 'industry.csv', '2025-03-28 04:00:00', 'RF', 'Inactive'),
+('m048', 'model007', 'industry.csv', '2025-04-02 04:00:00', 'SVM', 'Inactive'),
+('m078', 'model010', 'DSL-StrongPasswordData.csv', '2025-04-26 04:00:00', 'SVM', 'Inactive'),
+('m080', 'Model003', 'Paired Punch_20250328160223_export.csv', '2025-04-02 04:00:00', 'SVM', 'Active');
 
 -- --------------------------------------------------------
 
@@ -86,7 +71,19 @@ INSERT INTO `model_performance` (`p_id`, `model_id`, `user_id`, `true_positive`,
 (1, 'm048', 's011', 0, 0, 0, 1, '2025-04-25 11:45:43'),
 (2, 'm048', 's011', 0, 0, 0, 1, '2025-04-25 15:02:37'),
 (3, 'm001', 's002', 0, 0, 0, 1, '2025-04-25 15:32:34'),
-(4, 'm001', 's011', 0, 0, 0, 1, '2025-04-26 07:20:15');
+(4, 'm001', 's011', 0, 0, 0, 1, '2025-04-26 07:20:15'),
+(5, 'm001', 's011', 0, 0, 0, 1, '2025-04-26 06:29:35'),
+(6, 'm001', 's011', 0, 0, 0, 1, '2025-04-26 06:30:22'),
+(7, 'm001', 's011', 0, 0, 0, 1, '2025-04-26 06:46:13'),
+(8, 'm001', 's011', 0, 0, 0, 1, '2025-04-26 06:53:31'),
+(9, 'm001', 's011', 0, 0, 0, 1, '2025-04-26 06:54:09'),
+(10, 'm001', 's011', 0, 0, 0, 1, '2025-04-26 07:12:42'),
+(11, 'm001', 's011', 1, 0, 0, 0, '2025-04-27 10:29:07'),
+(12, 'm001', 's011', 0, 1, 0, 0, '2025-04-27 10:37:52'),
+(13, 'm001', 's011', 0, 0, 1, 0, '2025-04-27 13:23:16'),
+(14, 'm080', 's011', 0, 1, 0, 0, '2025-04-27 13:25:46'),
+(15, 'm080', 's011', 0, 0, 1, 0, '2025-04-27 13:29:35'),
+(16, 'm080', 's011', 0, 0, 1, 0, '2025-04-27 13:30:13');
 
 -- --------------------------------------------------------
 
@@ -162,12 +159,6 @@ INSERT INTO `users` (`user_id`, `username`, `password`, `auth_type`) VALUES
 --
 
 --
--- Indexes for table `auth_logs`
---
-ALTER TABLE `auth_logs`
-  ADD PRIMARY KEY (`id`);
-
---
 -- Indexes for table `model`
 --
 ALTER TABLE `model`
@@ -190,16 +181,10 @@ ALTER TABLE `users`
 --
 
 --
--- AUTO_INCREMENT for table `auth_logs`
---
-ALTER TABLE `auth_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT for table `model_performance`
 --
 ALTER TABLE `model_performance`
-  MODIFY `p_id` int(13) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `p_id` int(13) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

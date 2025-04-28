@@ -17,7 +17,6 @@
     <label for="authType" class="form-label">Auth Type:</label>
     <select id="authType" name="auth_type" class="form-select">
         <option value="Password" <?php if ($info['auth_type'] == 'Password') echo 'selected'; ?>>Password</option>
-        <option value="Keystroke" <?php if ($info['auth_type'] == 'Keystroke') echo 'selected'; ?>>Keystroke</option>
         <option value="Password + ks" <?php if ($info['auth_type'] == 'Password + ks') echo 'selected'; ?>>Password + ks</option>
     </select><br><br>
 

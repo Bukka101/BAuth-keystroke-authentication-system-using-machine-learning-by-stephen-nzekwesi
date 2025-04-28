@@ -18,11 +18,12 @@
         <div class="form-group">
             <label for="modelType">Model Type:</label>
             <select id="modelType" name="type" required>
-                <option value="SVM">Select Model Type</option>
-                <option value="Random Forest">RF</option>
+                <option value="" disabled selected>Select Model Type</option> <!-- Empty value, disabled and selected -->
+                <option value="RF">RF</option>
                 <option value="SVM">SVM</option>
             </select>
         </div>
+
 
         <!-- Buttons -->
         <div class="form-buttons">
