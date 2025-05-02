@@ -17,7 +17,6 @@ BAuth, Keystroke Dynamics, Behavioural Authentication, Keystroke Authentication,
 ## Directory/Files Definition
  - BAuth directory contains the web interface codes and files for the system's web interface. This includes the Controller/control.php - which contains the php code for frontend manipulation; Model/function.php - which contains the code for database manipulation; and View/ - which contains the frontend code files and assets.
  - Dataset directory contains the dataset files. The keystroke.csv file is the complete dataset (Benchmark dataset from Kaggle). This was shuffled and splitted into two, to create train_data.csv and test_data.csv. With train_data meant to be used for model training, and records from test_data to be used for system testing.
- - Docs directory contains the project documentation, including the poster files and final report.
  - Python_scripts directory contains the python files both in ipynb and py formats. The bauth_app defines the routes and starts Flask, while bauth_functions defines the training and classification functionalities.
  - keystrole.sql file contains the sql to define and populate the system's database.
  - requirements.txt file contains the python dependencies required to effectively run the python code.
